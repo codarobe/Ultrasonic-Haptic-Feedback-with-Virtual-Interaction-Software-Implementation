@@ -101,9 +101,9 @@ public final class GraphicsViewerExtensionService extends ExtensionService {
      * since the SmartEyeglass was turned on.
      */
     public void startSmartEyeglassExtension() {
-        Intent intent = new Intent(Control.Intents
-                .CONTROL_START_REQUEST_INTENT);
-        ExtensionUtils.sendToHostApp(getApplicationContext(),
+        Intent intent = new Intent(Control.Intents.CONTROL_START_REQUEST_INTENT);
+        ExtensionUtils.sendToHostApp(
+                GraphicsViewerExtensionService.Object.getApplicationContext(),
                 "com.sony.smarteyeglass", intent);
     }
 
@@ -126,20 +126,15 @@ public final class GraphicsViewerExtensionService extends ExtensionService {
     @Override
     public ControlExtension createControlExtension(
             final String hostAppPackageName) {
-        ScreenSize size = new ScreenSize(this);
-        final int width = size.getWidth();
-        final int height = size.getHeight();
-        List<DeviceInfo> list = RegistrationAdapter.getHostApplication(
-                this, hostAppPackageName).getDevices();
-        for (DeviceInfo device : list) {
-            for (DisplayInfo display : device.getDisplays()) {
-                if (display.sizeEquals(width, height)) {
-                    return new GraphicsViewerControl(this,
-                            hostAppPackageName, Message);
-                }
-            }
-        }
-        throw new IllegalArgumentException("No control for: "
-                + hostAppPackageName);
+        return new GLRenderControlSEG(this, hostAppPackageName);
+
+    }
+
+    public void startSEGControl()
+    {
+        Intent intent = new Intent(Control.Intents.CONTROL_START_REQUEST_INTENT);
+        ExtensionUtils.sendToHostApp(
+                GraphicsViewerExtensionService.Object.getApplicationContext(),
+                "com.sony.smarteyeglass", intent);
     }
 }

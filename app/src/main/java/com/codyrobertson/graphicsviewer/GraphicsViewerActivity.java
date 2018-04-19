@@ -32,16 +32,28 @@ Copyright (c) 2014, Sony Corporation
 package com.codyrobertson.graphicsviewer;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ConfigurationInfo;
+import android.graphics.Bitmap;
+import android.opengl.*;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.codyrobertson.graphicsviewer.GraphicsViewer;
 import com.codyrobertson.graphicsviewer.R;
+import com.sony.smarteyeglass.extension.util.SmartEyeglassControlUtils;
 import com.sonyericsson.extras.liveware.aef.registration.Registration;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 /**
  * The Graphics Viewer activity provides a button on the phone that starts
@@ -52,10 +64,13 @@ import com.sonyericsson.extras.liveware.aef.registration.Registration;
 
 public final class GraphicsViewerActivity extends Activity {
 
+    private GLSurfaceView mGLSurfaceView;
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.phonelayout);
+
 
         // When button is clicked, run the SmartEyeglass app
         Button btnGlass = (Button) findViewById(R.id.btnglass);
@@ -92,10 +107,58 @@ public final class GraphicsViewerActivity extends Activity {
             intent.setClass(context, GraphicsViewerExtensionService.class);
             context.startService(intent);
         }
+
+
+        mGLSurfaceView = new GLSurfaceView(this);
+        //mGLSurfaceView = new PixelBuffer(138, 138, this);
+
+        // Check if the system supports OpenGL ES 2.0.
+        final ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        final ConfigurationInfo configurationInfo = activityManager.getDeviceConfigurationInfo();
+        final boolean supportsEs2 = configurationInfo.reqGlEsVersion >= 0x20000;
+
+        ObjectRenderer renderer = new ObjectRenderer();
+
+        if (supportsEs2)
+        {
+            // Request an OpenGL ES 2.0 compatible context.
+            mGLSurfaceView.setEGLContextClientVersion(2);
+
+            // Set the renderer to our demo renderer, defined below.
+            mGLSurfaceView.setRenderer(renderer);
+        }
+        else
+        {
+            // This is where you could create an OpenGL ES 1.x compatible
+            // renderer if you wanted to support both ES 1 and ES 2.
+            return;
+        }
+
+        setContentView(mGLSurfaceView);
+
+        //renderer.SavePixels(0, 0, 30, 30);
+
+        //com.codyrobertson.graphicsviewer.GraphicsViewer viewer = new com.codyrobertson.graphicsviewer.GraphicsViewer();
+
+        try {
+            ServerSocket ss = new ServerSocket(65);
+            Socket s = ss.accept();
+            PrintWriter out = new PrintWriter(s.getOutputStream());
+            //BufferedReader br = new BufferedReader()
+            while (true) {
+
+            }
+        }
+        catch (IOException ioe) {
+            System.out.println(ioe.getMessage());
+        }
+
+
+        //startExtension();
     }
 
     /**
-     *  Start the app with the message "Hello SmartEyeglass"
+     *  Start the app with the message "Hello extension"
      */
     public void startExtension() {
         // Check ExtensionService is ready and referenced
@@ -104,4 +167,19 @@ public final class GraphicsViewerActivity extends Activity {
                     .sendMessageToExtension("Hello extension");
         }
     }
+
+    @Override
+    protected void onResume() {
+        // The activity must call the GL surface view's onResume() on activity onResume().
+        super.onResume();
+        mGLSurfaceView.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        // The activity must call the GL surface view's onPause() on activity onPause().
+        super.onPause();
+        mGLSurfaceView.onPause();
+    }
 }
+
