@@ -1,0 +1,15 @@
+﻿<Window x:Class="GestureRecognition.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GestureRecognition"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Button x:Name="kinectViewerButton" Content="Open Kinect Viewer" HorizontalAlignment="Left" Margin="326,64,0,0" VerticalAlignment="Top" Width="182" Height="52" Click="kinectViewerButton_Click"/>
+        <Button x:Name="graphicsViewerButton" Content="Open Graphics Viewer" HorizontalAlignment="Left" Margin="326,152,0,0" VerticalAlignment="Top" Width="182" Height="52" Click="graphicsViewerButton_Click"/>
+        <Button x:Name="networkedGesturesButton" Content="Open Networked Gestures" HorizontalAlignment="Left" Margin="326,250,0,0" VerticalAlignment="Top" Width="182" Height="52" Click="networkedGesturesButton_Click"/>
+
+    </Grid>
+</Window>
